@@ -37,15 +37,25 @@ router.get('/posts', async (ctx, next) => {
 
 router.post('/posts', async(ctx, next) => {
     const {id, content, created} = ctx.request.body;
-    const data = JSON.parse(ctx.request.body);
-    console.log("ctx----------", ctx.response.body,'data\n', data);
+    console.log('пришло в post запросе', ctx.request, ctx.request.body,'\n',id, content, created);
+    //const data = JSON.parse(ctx.request.body);
+    const data = ctx.request.body;
+    //{id, content, created} = data;
+    console.log("ctx----------", ctx.request.body,'data\n', data);
     if (id !== 0) {
-        posts = posts.map(o => o.id !== id ? o : {...o, content: content});
+        posts = posts.map(o => o.id !== id ? o : {...o, content: content, created: created});
+        console.log("\n!!!!post on exit--", posts);
         ctx.response.status = 204;
-        return;
+        //return;
     }
 
-    posts.push({...ctx.request.body, id: nextId++, created: Date.now()});
+    posts.push({...ctx.request.body, id: nextId++});
+    console.log("\nelse post on exit--", posts);
+
+    /*response.SetHeader(
+        "Access-Control-Allow-Origin", "http://localhost:3000/");
+    response.SetHeader(
+        "Access-Control-Allow-Credentials", true);*/
     ctx.response.status = 204;
 });
 
