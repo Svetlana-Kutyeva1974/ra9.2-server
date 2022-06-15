@@ -32,25 +32,27 @@ const router = new Router();
 
 router.get('/posts', async (ctx, next) => {
     ctx.response.body = JSON.stringify(posts);
-    console.log("ctx-----get", ctx.response.body);
+    console.log("ctx-----get:\n", ctx.response.body);
 });
 
 router.post('/posts', async(ctx, next) => {
+    const postLength = posts.length;
     const {id, content, created} = ctx.request.body;
-    console.log('пришло в post запросе', ctx.request, ctx.request.body,'\n',id, content, created);
+    console.log('пришло в post запросе:\n', ctx.request, ctx.request.body,'\n',id, content, created);
     //const data = JSON.parse(ctx.request.body);
     const data = ctx.request.body;
     //{id, content, created} = data;
-    console.log("ctx----------", ctx.request.body,'data\n', data);
-    if (id !== 0) {
-        posts = posts.map(o => o.id !== id ? o : {...o, content: content, created: created});
+    console.log("ctx--------:\n", ctx.request.body,'\ndata:', data, '\nid:',id);
+    if (id !== 0 && id !=='') {
+        posts = posts.map(o => o.id !== id ? o : {...o, content: content});
         console.log("\n!!!!post on exit--", posts);
         ctx.response.status = 204;
-        //return;
+        //if (postLength !== posts.length) {return;}
+        return;
     }
 
-    posts.push({...ctx.request.body, id: nextId++});
-    console.log("\nelse post on exit--", posts);
+    posts.push({...ctx.request.body, id: nextId++, created: Date.now()});
+    console.log("\n else post on exit--", posts);
 
     /*response.SetHeader(
         "Access-Control-Allow-Origin", "http://localhost:3000/");
@@ -61,7 +63,7 @@ router.post('/posts', async(ctx, next) => {
 
 router.delete('/posts/:id', async(ctx, next) => {
     console.log("id backend----------", ctx, nextId);
-    const postId = JSON.parse(ctx.params.id);
+    const postId = JSON.parse(ctx.params.id);//const postId = Number(ctx.params.id);
     const index = posts.findIndex(o => o.id === postId);
     if (index !== -1) {
         posts.splice(index, 1);
